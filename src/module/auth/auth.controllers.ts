@@ -39,7 +39,7 @@ const loginUser = async (req: Request, res: any) => {
     // Implement login logic here
     const result = await authService.loginUserDB(req.body);
     const { password, ...userWithoutPassword } = result?.user;
-
+    
     res.status(200).json({
       success: true,
       message: "Login successful",
