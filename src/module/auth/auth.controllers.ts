@@ -4,7 +4,7 @@ import { authService } from "./auth.services";
 const createUser = async (req: Request, res: any) => {
   try {
     const userData = req.body;
-    
+
     // Call service to create user in DB
     // Assuming authService.createUserDB is properly imported
     if (!userData.password || userData.password.length < 6) {
@@ -15,10 +15,35 @@ const createUser = async (req: Request, res: any) => {
       });
     }
     const result = await authService.createUserDB(userData);
+
+    // Remove password from response
+    const { password, ...userWithoutPassword } = result.rows[0];
+
     res.status(201).json({
-      status: "success",
-      message: "User created successfully",
-      data: result.rows[0],
+      success: true,
+      message: "User registered successfully",
+      data: userWithoutPassword,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: error instanceof Error ? error.message : "Internal Server Error",
+      success: false,
+      error: error,
+    });
+  }
+};
+
+const loginUser = async (req: Request, res: any) => {
+  try {
+    // Implement login logic here
+    const result = await authService.loginUserDB(req.body);
+    const { password, ...userWithoutPassword } = result?.user;
+
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      data: { token: result.token, user: userWithoutPassword },
     });
   } catch (error) {
     res.status(500).json({
@@ -32,4 +57,5 @@ const createUser = async (req: Request, res: any) => {
 
 export const authController = {
   createUser,
+  loginUser,
 };

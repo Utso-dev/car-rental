@@ -19,6 +19,13 @@ app.get("/", (req: Request, res: Response) => {
 app.use("/api/v1/auth/", atuthRouter);
 app.use("/api/v1/users", userRouter);
 
+app.use((req: Request, res: Response) => {
+  res.status(404).json({ 
+    success: false,
+    message: "Endpoint not found" ,
+    path: req.path
+  });
+});
 
 
 export default app;
