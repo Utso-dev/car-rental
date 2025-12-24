@@ -1,29 +1,42 @@
-import { NextFunction, Request, Response } from "express";
 
-const authProtected = () => {
-  return async (req: Request, res: Response, next: NextFunction) => {
+import jwt, { JwtPayload } from 'jsonwebtoken';
+import config from '../config/config';
+import { Request } from 'express';
+
+const auth = (...roles: string[]) => {
+  return async (req: any, res: any, next: any) => {
     try {
-      const authToken = req.headers.authorization;
-      console.log(authProtected);
-
-      if (!authToken || !authToken.startsWith("Bearer ")) {
+      const authHeader = req.headers.authorization;
+      if (!authHeader) {
         return res.status(401).json({
-          status: "error",
-          message: "Unauthorized: No token provided",
+          message:
+            'Authorization token is missing, you ar not allowed to access this resource',
           success: false,
         });
       }
+      const decodedToken = jwt.verify(
+        authHeader,
+        config.jwt_secret as string
+      ) as JwtPayload;
+      if (roles.length && !roles.includes(decodedToken.role as string)) {
+        return res.status(403).json({
+          message:
+            'Forbidden: You do not have the required permissions to access this resource',
+          success: false,
+        });
+      }
+      req.user = decodedToken;
+
       next();
     } catch (error) {
-      res.status(500).json({
-        status: "error",
-        message:
-          error instanceof Error ? error.message : "Internal Server Error",
+      res.status(401).json({
+        message: 'Unauthorized',
+        error: error instanceof Error ? error.message : 'Internal Server Error',
         success: false,
-        error: error,
       });
+      return;
     }
   };
 };
 
-export default authProtected;
+export default auth;
