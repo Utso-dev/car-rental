@@ -1,20 +1,14 @@
 import express, { Router, Request, Response } from "express";
+import auth from "../../middleware/auth";
+import { userControllers } from "./user.controllers";
+
 
 const userRouter = Router();
 
 
-userRouter.get("/", (req: Request, res: Response) => {
-  res.json({
-    status: "success",
-    message: "All users fetched",
-    data: [
-      { id: 1, name: "User 1", email: "user1@example.com" },
-      { id: 2, name: "User 2", email: "user2@example.com" }
-    ]
-  });
-});
-
-
-
+userRouter.get("/", auth(), userControllers.getAllUsers);
+userRouter.get("/:id", auth(), userControllers.getUserById);
+userRouter.put("/:id", auth(), userControllers.updateUserById);
+userRouter.delete("/:id", auth(), userControllers.deleteUserById);
 
 export default userRouter;

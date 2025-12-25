@@ -12,7 +12,6 @@ const vehicleCreateDB = async(data: Vehicles) => {
         `,
         [vehicle_name, type, registration_number, daily_rent_price, availability_status]
     );
-
     return result;
 }
 
