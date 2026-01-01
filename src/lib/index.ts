@@ -17,3 +17,11 @@ export interface Vehicles {
     daily_rent_price: number;
     availability_status?: 'available' | 'booked';
 }
+
+export interface Bookings {
+    id: number;
+    customer_id: number;
+    vehicle_id: number;
+    rent_start_date: Date;
+    rent_end_date: Date;
+}
