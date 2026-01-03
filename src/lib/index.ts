@@ -24,4 +24,6 @@ export interface Bookings {
     vehicle_id: number;
     rent_start_date: Date;
     rent_end_date: Date;
+    total_price?: number;
+    status?: 'active' | 'completed' | 'cancelled';
 }

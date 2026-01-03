@@ -1,10 +1,8 @@
-import express, { Router, Request, Response } from "express";
+import { Router } from "express";
 import auth from "../../middleware/auth";
 import { userControllers } from "./user.controllers";
 
-
 const userRouter = Router();
-
 
 userRouter.get("/", auth(), userControllers.getAllUsers);
 userRouter.get("/:id", auth(), userControllers.getUserById);

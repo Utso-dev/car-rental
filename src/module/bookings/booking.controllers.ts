@@ -1,15 +1,24 @@
 import { Request, Response } from "express";
 import { bookingService } from "./booking.services";
+import { vehicleService } from "../vehicles/vehicles.services";
+import { userService } from "../users/user.services";
 
 const createBooking = async (req: Request, res: Response) => {
   try {
     const result = await bookingService.createBookingDB(req.body);
+    const vehicle = await vehicleService.getVehicleByIdDB(
+      req.body.vehicle_id
+    );
+    const single = {
+      vehicle_name: vehicle.rows[0].vehicle_name,
+      daily_rent_price: vehicle.rows[0].daily_rent_price,
+    };
+
     res.status(201).json({
       success: true,
       message: "Booking created successfully",
-      data: result.rows[0],
+      data: { ...result.rows[0], vehicle: single },
     });
-    console.log("result", result);
   } catch (error) {
     res.status(500).json({
       status: "error",
@@ -23,6 +32,11 @@ const createBooking = async (req: Request, res: Response) => {
 const getAllBookings = async (req: Request, res: Response) => {
   try {
     const result = await bookingService.getAllBookingsDB();
+    res.status(200).json({  
+        success: true,  
+        message: "Bookings retrieved successfully", 
+            data: result.rows,
+        });
   } catch (error) {
     res.status(500).json({
       status: "error",
