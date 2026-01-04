@@ -4,6 +4,7 @@ import userRouter from "./module/users/users.route";
 import atuthRouter from "./module/auth/auth.route";
 import initDB from "./config/db";
 import vehiclesRouter from "./module/vehicles/vehicles.route";
+import { bookingsRouter } from "./module/bookings/booking.router";
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.get("/", (req: Request, res: Response) => {
 app.use("/api/v1/auth/", atuthRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/vehicles", vehiclesRouter);
+app.use("/api/v1/bookings", bookingsRouter);
 
 app.use((req: Request, res: Response) => {
   res.status(404).json({ 
