@@ -3,7 +3,13 @@ import { Bookings } from "../../lib";
 
 const createBookingDB = async (data: Bookings) => {
   // Simulate database insertion logic
-  const { customer_id, vehicle_id, rent_start_date, rent_end_date , status = "active" } = data;
+  const {
+    customer_id,
+    vehicle_id,
+    rent_start_date,
+    rent_end_date,
+    status = "active",
+  } = data;
   const dailyRentPriceResult = await pool.query(
     `SELECT v.vehicle_name, v.daily_rent_price FROM vehicles v WHERE v.id = $1`,
     [vehicle_id]
@@ -51,14 +57,61 @@ const createBookingDB = async (data: Bookings) => {
   return result;
 };
 
-const getAllBookingsDB = async () => {
-  // Simulate database fetch logic
-  const result = pool.query(`SELECT * FROM bookings`);
+const getAllBookingsDB = async (userId: number, role: string) => {
+  const result = await pool.query(
+    `
+    SELECT 
+      b.*, 
+      json_build_object(
+        'id', u.id,
+        'name', u.name,
+        'email', u.email,
+        'phone', u.phone,
+        'role', u.role
+      ) AS customer,
+      json_build_object(
+        'id', v.id,
+        'vehicle_name', v.vehicle_name,
+        'type', v.type,
+        'registration_number', v.registration_number,
+        'daily_rent_price', v.daily_rent_price,
+        'availability_status', v.availability_status
+      ) AS vehicle
+    FROM bookings b
+    LEFT JOIN users u ON u.id = b.customer_id
+    LEFT JOIN vehicles v ON v.id = b.vehicle_id
+    `
+  );
   return result;
 };
+
 const getSingleBookingsDB = async (id: number) => {
-  // Simulate database fetch logic
-  const result = pool.query(`SELECT * FROM bookings WHERE id = $1`, [id]);
+  const result = await pool.query(
+    `
+    SELECT 
+      b.*, 
+      json_build_object(
+        'id', u.id,
+        'name', u.name,
+        'email', u.email,
+        'phone', u.phone,
+        'role', u.role
+      ) AS customer,
+      json_build_object(
+        'id', v.id,
+        'vehicle_name', v.vehicle_name,
+        'type', v.type,
+        'registration_number', v.registration_number,
+        'daily_rent_price', v.daily_rent_price,
+        'availability_status', v.availability_status
+      ) AS vehicle
+    FROM bookings b
+    LEFT JOIN users u ON u.id = b.customer_id
+    LEFT JOIN vehicles v ON v.id = b.vehicle_id
+    WHERE b.id = $1
+    `,
+    [id]
+  );
   return result;
 };
 
